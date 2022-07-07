@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>瑞吉外卖管理端</title>
+  <link rel="shortcut icon" href="../../favicon.ico">
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css">
+  <link rel="stylesheet" href="../../styles/login.css">
+  <link rel="stylesheet" href="../../styles/icon/iconfont.css" />
+  <style>
+    .body{
+      min-width: 1366px;
+    }
+  </style>
+</head> 
+
+<body>
+  <div class="login" id="login-app">
+    <div class="login-box">
+      <img src="../../images/login/login-l.png" alt="">
+      <div class="login-form">
+        <el-form ref="loginForm" :model="loginForm" :rules="loginRules" >
+          <div class="login-form-title">
+            <img src="../../images/login/logo.png" style="width:139px;height:42px;" alt="" />
+          </div>
+          <el-form-item prop="username">
+            <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号" maxlength="20"
+              prefix-icon="iconfont icon-user" />
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input v-model="loginForm.password" type="password" placeholder="密码" prefix-icon="iconfont icon-lock" maxlength="20"
+              @keyup.enter.native="handleLogin" />
+          </el-form-item>
+          <el-form-item style="width:100%;">
+
+         <!-- 登陆按钮-->      <!-- click事件，点击登陆按钮时就会调用script代码中的这个handleLogin方法-->
+            <el-button :loading="loading" class="login-btn" size="medium" type="primary" style="width:100%;"
+              @click.native.prevent="handleLogin">
+<!--            这里用了一个if判断，若果loading是false，取非就是true显示登陆，否则显示登陆中...-->
+              <span v-if="!loading">登录</span>
+              <span v-else>登录中...</span>
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="../../plugins/vue/vue.js"></script>
+  <!-- 引入组件库 -->
+  <script src="../../plugins/element-ui/index.js"></script>
+  <!-- 引入axios -->
+  <script src="../../plugins/axios/axios.min.js"></script>
+  <script src="../../js/request.js"></script>
+  <script src="../../js/validate.js"></script>
+  <script src="../../api/login.js"></script>
+
+  <script>
+    new Vue({
+      el: '#login-app',
+      data() {
+        return {
+          loginForm:{
+            username: 'admin',
+            password: '123456'
+          },
+          loading: false
+        }
+      },
+      computed: {
+        loginRules() {
+          const validateUsername = (rule, value, callback) => {
+            if (value.length < 1 ) {
+              callback(new Error('请输入用户名'))
+            } else {
+              callback()
+            }
+          }
+          const validatePassword = (rule, value, callback) => {
+            if (value.length < 6) {
+              callback(new Error('密码必须在6位以上'))
+            } else {
+              callback()
+            }
+          }
+          return {
+            'username': [{ 'validator': validateUsername, 'trigger': 'blur' }],
+            'password': [{ 'validator': validatePassword, 'trigger': 'blur' }]
+          }
+        }
+      },
+      created() {
+      },
+      methods: {
+        async handleLogin() {
+          // 找到loginForm表单并校验用户名密码是否符合规范
+          this.$refs.loginForm.validate(async (valid) => {
+            //若果校验成功，则valid为true
+            if (valid) {
+              //将这个loading设置为true，即显示登陆中...
+              this.loading = true
+              //校验通过后重点是调用该方法loginApi，而该方法则是封装到了一个js文件中，按住CTRL点击即可，这个loginForm就是携带的数据
+              let res = await loginApi(this.loginForm)
+              //后端接收到请求之后返回响应结果，使用res进行接收，res.code=1的话表示请求成功（前后端约定）
+              if (String(res.code) === '1') {
+                //将响应结果转化为json数据保存到浏览器中，key是userInfo，value则是对应的json数据
+                localStorage.setItem('userInfo',JSON.stringify(res.data))
+                //进行页面跳转
+                window.location.href= '/backend/index.html'
+              } else {
+                //请求失败的处理
+                this.$message.error(res.msg)
+                this.loading = false
+              }
+            }
+          })
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
