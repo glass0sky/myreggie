@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationContext;
 @ServletComponentScan
 public class MyReggieTakeOutApp {
     public static void main(String[] args) {
-        log.info("项目开始启动... ");
+        log.info("项目开始启动...");
         ApplicationContext context = SpringApplication.run(MyReggieTakeOutApp.class, args);
         log.info("项目启动成功.....");
     }
