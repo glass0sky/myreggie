@@ -17,6 +17,6 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: ASSIGN_ID
-#
-#reggie:
-#  path: C:\Users\mengdongyi\Pictures\Saved Pictures\reggie
+
+reggie:
+  path: C:\\Users\\mengdongyi\\Desktop\\hadoop\\
