@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
@@ -84,6 +85,7 @@ public class SetmealController {
      * @param setmealDto
      * @return
      */
+    @CacheEvict(value = "setmealCache",allEntries = true)
     @PostMapping
     public R<String> save(@RequestBody SetmealDto setmealDto){
         log.info("保存信息：{}",setmealDto.toString());
@@ -160,7 +162,9 @@ public class SetmealController {
      * @param ids
      * @return
      */
+
     @DeleteMapping
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public R<String> delete(Long[] ids){
         for (int i = 0; i < ids.length; i++) {
             LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
